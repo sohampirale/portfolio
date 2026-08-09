@@ -1,0 +1,57 @@
+---
+title: "DockHostV2 — Distributed Container Orchestration Platform"
+role: "Infrastructure Engineer & Builder"
+year: 2025
+duration: "2 months"
+teamSize: 2
+outcomeSummary: "Architected a cloud developer platform providing on-demand Ubuntu container instances with SSH terminal access and dynamic port mapping."
+overview: "DockHostV2 is a lightweight cloud hosting platform. Users can provision isolated Docker container environments, stream live interactive terminal sessions via WebSockets/Socket.io, and expose ports for web apps."
+problem: "Developers need rapid, isolated sandbox environments for testing and deployment without waiting for slow VM startup times or incurring high cloud bills."
+constraints:
+  - "Real-time bidirectional terminal streaming with zero perceptible latency"
+  - "Isolated container networks with port mapping for 22 (SSH), 80, and 443"
+  - "Multi-worker node management controlled by a central web dashboard"
+approach: "Built a Next.js control plane UI, an Express backend API server, and worker node agents communicating over Socket.io. Managed container lifecycles via the Docker Engine API."
+keyDecisions:
+  - decision: "Use Socket.io over raw WebSockets for control plane-to-worker communication"
+    reasoning: "Built-in reconnection logic, fallback transports, and room namespaces simplified multi-node worker management and live terminal streaming."
+    alternatives:
+      - "Raw WebSockets"
+      - "gRPC over HTTP/2"
+  - decision: "Decouple Control Plane from Worker Nodes"
+    reasoning: "Allows adding new worker servers across different geographic regions without modifying the main user dashboard."
+techStack:
+  - "TypeScript"
+  - "Next.js"
+  - "Node.js"
+  - "Express"
+  - "Socket.io"
+  - "Docker API"
+  - "MongoDB"
+  - "Linux SSH"
+  - "Tailwind CSS"
+impact:
+  metrics:
+    - label: "Provisioning Speed"
+      value: "< 3 seconds"
+    - label: "Terminal Latency"
+      value: "< 20ms (Real-time)"
+    - label: "Port Forwarding"
+      value: "SSH (22) + HTTP (80/443)"
+  qualitative: "Designed and built an end-to-end cloud container platform that enables developers to launch and control remote Linux instances instantly."
+learnings:
+  - "Strict cgroups and memory/CPU limits are required when hosting user-submitted containers."
+  - "Handling persistent WebSocket connections across worker nodes requires robust reconnection strategies."
+featured: true
+order: 3
+---
+
+## System Architecture
+
+DockHostV2 bridges web-based developer tooling with backend container infrastructure.
+
+### Core Architecture Components
+
+1. **Control Plane (Next.js & Express)**: Handles user authentication, container scheduling, database state, and routing.
+2. **Worker Node Agents**: Lightweight daemons running on worker servers that interact directly with the local Docker daemon socket (`/var/run/docker.sock`).
+3. **Interactive Web Terminal**: Streams PTY terminal IO between the web browser and the container's bash session using xterm.js and Socket.io.

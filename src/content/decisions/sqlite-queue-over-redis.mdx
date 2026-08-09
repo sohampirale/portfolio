@@ -1,0 +1,29 @@
+---
+title: "Choosing Embedded SQLite (better-sqlite3) Over Redis for Low-RAM Queueing"
+date: 2026-07-10
+context: "While developing RopMitra's WhatsApp campaign engine, we needed a robust background job queue. However, the deployment target was an Oracle Always Free VM constrained to <80MB of allocated RAM."
+decision: "Use embedded SQLite with synchronous WAL (Write-Ahead Logging) via better-sqlite3 as a persistent background job queue instead of running a Redis + BullMQ stack."
+alternatives:
+  - option: "Redis + BullMQ"
+    pros: ["Industry standard", "Built-in rate limiting & concurrency primitives"]
+    cons: ["Requires background Redis daemon taking 30-50MB RAM", "Overkill for single-node deployment"]
+  - option: "In-Memory JavaScript Arrays"
+    pros: ["Zero additional memory overhead", "Extremely simple"]
+    cons: ["Jobs lost on server restart or crash", "No ACID transactions"]
+reasoning: "better-sqlite3 runs in-process inside Node.js, consuming zero additional daemon memory. It handles atomic job lock/unlock queries in under 1ms while surviving process crashes."
+tags: ["Architecture", "Database", "Performance", "Optimization"]
+relatedProjects:
+  - "ropmitra-whatsapp-automation"
+---
+
+## Context & Problem Statement
+
+Running background jobs on constrained cloud tiers requires strict memory management. A standard Redis + BullMQ setup introduces 40-60MB of memory overhead for the Redis process alone, consuming over half of our available 80MB allocation.
+
+## Decision & Implementation
+
+By creating a lightweight SQLite `jobs` table with `status`, `retry_count`, and `scheduled_at` columns, we achieved:
+
+- **Zero Extra Memory Footprint**: Runs inside the existing Node.js memory heap.
+- **Persistence & Crash Recovery**: WAL mode ensures pending jobs survive server reboots.
+- **Atomic Processing**: Using `BEGIN IMMEDIATE` transactions prevents double-processing by worker loops.

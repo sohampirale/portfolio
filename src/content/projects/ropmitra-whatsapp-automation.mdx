@@ -1,0 +1,64 @@
+---
+title: "RopMitra — Outreach & WhatsApp Automation Engine"
+role: "Product Developer & Lead Architect"
+year: 2026
+duration: "2 months"
+teamSize: 2
+outcomeSummary: "Engineered a low-footprint, multi-user WhatsApp campaign automation system optimized for <80MB RAM VMs with a zero-dependency SQLite queue."
+overview: "Built the outreach and client communication engine for RopMitra, a digital nursery management platform in Maharashtra. The system automates multi-user WhatsApp messaging, Marathi PDF invoice delivery, and seasonal batch updates."
+problem: "Traditional nursery operations rely on paper registers, leading to high drop-off rates in seasonal customer re-orders and delayed billing. Furthermore, infrastructure budget constraints required the outreach system to run reliably on an Oracle Always Free VM with <80MB of allocated RAM."
+constraints:
+  - "Must run reliably under 80MB RAM limits without memory leaks or crashes"
+  - "Enforce strict rate-limiting (1 message per 5 minutes) to prevent anti-spam bans"
+  - "Zero external queue service dependencies (e.g. Redis) to minimize system overhead"
+  - "Support multi-user SQLite session isolation"
+approach: "Built an Express + Vite/React 18 TypeScript application integrated with Evolution API / Baileys. Designed a persistent SQLite task queue using better-sqlite3 for zero-overhead background job processing."
+keyDecisions:
+  - decision: "Use embedded SQLite (better-sqlite3) instead of Redis for job queuing"
+    reasoning: "Eliminated the memory footprint of a background Redis daemon in a <80MB RAM environment while maintaining ACID transactional guarantees and instant startup."
+    alternatives:
+      - "Redis + BullMQ"
+      - "RabbitMQ"
+      - "In-memory JavaScript arrays"
+  - decision: "Direct integration with Evolution API via REST & Webhook handlers"
+    reasoning: "Provides robust WhatsApp session persistence, QR code pairing, and multi-device connection management without locking into proprietary SDKs."
+    alternatives:
+      - "Twilio WhatsApp Business API"
+      - "Meta Official WhatsApp Cloud API"
+techStack:
+  - "TypeScript"
+  - "React 18"
+  - "Vite"
+  - "Node.js"
+  - "Express"
+  - "SQLite"
+  - "better-sqlite3"
+  - "Evolution API"
+  - "Docker"
+impact:
+  metrics:
+    - label: "RAM Footprint"
+      value: "< 80MB RAM"
+    - label: "Rate Limit Safety"
+      value: "1 msg / 5 min (0 bans)"
+    - label: "Target Market"
+      value: "Nursery operations in MH"
+  qualitative: "Successfully automated seedling batch notifications, Marathi PDF invoice generation, and targeted customer outreach with zero infrastructure hosting cost."
+learnings:
+  - "Embedded SQLite is exceptionally performant and memory-efficient for single-node queue processing."
+  - "Rate-limiting queue architecture is crucial when integrating third-party messaging gateways."
+featured: true
+order: 1
+---
+
+## Deep Dive: Low-Footprint Architecture
+
+When building automation tools for local businesses in regional markets like Maharashtra, keeping operational overhead low is paramount. 
+
+Instead of relying on heavyweight cloud queues like BullMQ or Redis, **RopMitra Outreach** uses a custom task scheduler built on top of `better-sqlite3`.
+
+### Key System Features
+
+1. **Transactional Queueing**: Campaign batches uploaded via CSV are parsed, sanitized, and inserted into SQLite inside a single database transaction.
+2. **Rate-Limited Dispatcher**: A background worker process polls the SQLite queue every minute, enforcing a strict schedule (1 message / 5 minutes per device session) to prevent account bans.
+3. **Marathi PDF Invoicing**: Integrates invoice generation to auto-send formatted PDF receipts over WhatsApp upon order completion.

@@ -1,0 +1,21 @@
+---
+title: "Choosing Socket.io Over Raw WebSockets for Control-Plane Worker Node Orchestration"
+date: 2025-08-20
+context: "Building DockHostV2 required bidirectional communication between the central control plane web server and remote backend worker node daemons to stream container terminal sessions."
+decision: "Adopt Socket.io with custom namespace rooms rather than standard raw WebSocket connections."
+alternatives:
+  - option: "Raw WebSockets (`ws` npm package)"
+    pros: ["Lower bundle size", "Pure native protocol implementation"]
+    cons: ["Manual heartbeats and reconnection handling required", "Complex multiplexing for terminal streams"]
+  - option: "gRPC Streams"
+    pros: ["Strongly typed schema", "High performance"]
+    cons: ["More complex web browser integration", "Higher setup overhead for small worker fleets"]
+reasoning: "Socket.io's automatic reconnection, heartbeat failure detection, room namespaces, and fallback transports significantly reduced boilerplate code for managing multi-worker node connections."
+tags: ["Networking", "WebSockets", "Infrastructure", "Realtime"]
+relatedProjects:
+  - "dockhost-container-platform"
+---
+
+## Technical Reasoning
+
+Streaming interactive shell sessions requires bulletproof connection management. Network hiccups shouldn't hang container PTY streams or leave zombie Docker containers running on worker nodes. Socket.io provided out-of-the-box ping/pong heartbeats and seamless client reconnection.

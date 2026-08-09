@@ -1,0 +1,51 @@
+---
+title: "Agentic System PR Reviewer"
+role: "AI Systems Developer"
+year: 2025
+duration: "1 month"
+teamSize: 1
+outcomeSummary: "Built an autonomous LangGraph agentic pipeline that inspects GitHub Pull Requests, analyzes code diffs for security & logic flaws, and posts structured inline comments."
+overview: "An automated developer tool powered by LangGraph cyclic agent graphs. It fetches GitHub PR diffs, executes multi-step static analysis, identifies security vulnerabilities, and posts contextual inline feedback on GitHub."
+problem: "Manual code reviews consume significant engineering hours, particularly for catching recurring syntax bugs, missing error handles, and security anti-patterns."
+constraints:
+  - "Avoid hallucinated code suggestions by validating suggestions against actual AST diffs"
+  - "Respect GitHub REST & GraphQL API rate limits"
+  - "Stateful execution capable of evaluating multi-file pull requests"
+approach: "Designed a multi-agent LangGraph workflow in Python where specialized agent nodes handle syntax analysis, security checks, and comment formatting."
+keyDecisions:
+  - decision: "Use LangGraph cyclic state graphs over linear LLM chains"
+    reasoning: "LangGraph allows agents to re-evaluate output, check for false positives, and refine suggestions before executing GitHub API writes."
+    alternatives:
+      - "Sequential LangChain chains"
+      - "Single-prompt GPT-4 calls"
+techStack:
+  - "Python"
+  - "LangGraph"
+  - "LangChain"
+  - "OpenAI API"
+  - "GitHub API"
+  - "Docker"
+impact:
+  metrics:
+    - label: "Feedback Speed"
+      value: "Instant PR Audits"
+    - label: "Agent Pattern"
+      value: "Cyclic State Graph"
+    - label: "Vulnerability Catch"
+      value: "Static + LLM Analysis"
+  qualitative: "Automated routine PR review tasks, delivering instant feedback on pull requests and improving overall code quality."
+learnings:
+  - "Cyclic agent graphs drastically improve accuracy over single-pass LLM prompts."
+  - "Formatting inline PR comments accurately requires precise line-offset mapping from git diffs."
+featured: true
+order: 4
+---
+
+## Multi-Agent Review Workflow
+
+The system treats PR review as a collaborative multi-agent process:
+
+1. **Diff Collector Node**: Fetches pull request files and parses unified git diff patches.
+2. **Security Inspector Node**: Scans changes for secret leaks, injection risks, and unhandled promises.
+3. **Refiner Node**: Evaluates proposed review comments for false positives and formats markdown suggestions.
+4. **GitHub Publisher Node**: Uses GitHub Webhooks and APIs to post comments directly to the pull request thread.

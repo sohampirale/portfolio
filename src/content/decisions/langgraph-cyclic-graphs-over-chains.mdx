@@ -1,0 +1,21 @@
+---
+title: "Choosing LangGraph Cyclic State Graphs Over Linear LLM Chains for Code Review Agents"
+date: 2025-10-09
+context: "When designing the automated Pull Request Review Agent (`Agentic_System_PR_REVIEQ`), single-pass linear LLM prompts frequently generated false-positive bug warnings or incorrect git diff line references."
+decision: "Use LangGraph cyclic state graphs to structure AI code review into a stateful, iterative multi-node workflow."
+alternatives:
+  - option: "Single-pass GPT-4 System Prompts"
+    pros: ["Fastest execution speed", "Simple implementation"]
+    cons: ["High rate of false positives", "Cannot double-check generated inline diff coordinates"]
+  - option: "Sequential LangChain LCEL Chains"
+    pros: ["Modular code organization"]
+    cons: ["Linear execution path prevents loops or verification retries"]
+reasoning: "LangGraph allows agents to loop back: if the Refiner node finds that a suggested security comment points to an unchanged line in the diff, it sends the state back to the Inspector node for correction before posting to GitHub."
+tags: ["AI", "Agents", "LangGraph", "LLM", "Automation"]
+relatedProjects:
+  - "agentic-pr-reviewer"
+---
+
+## Key Takeaway
+
+Complex developer tools require self-healing agent workflows. Structuring agents as state machines with validation cycles drastically increases output reliability and eliminates hallucinated bug reports.

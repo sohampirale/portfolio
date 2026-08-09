@@ -1,0 +1,60 @@
+---
+title: "n8n Clone — Visual Workflow Automation & AI Agent Engine"
+role: "Creator & Lead Architect"
+year: 2025
+duration: "3 months"
+teamSize: 1
+outcomeSummary: "Architected a full-stack drag-and-drop workflow automation engine with Node.js, TypeScript, custom nodes, and AI Agent nodes supporting OpenAI, Anthropic, and local LLMs."
+overview: "An open-source visual workflow automation platform built from scratch. It features an interactive node-graph visual canvas, an asynchronous DAG execution engine, encrypted credential persistence, and AI Agent integration."
+problem: "Existing workflow automation tools are either costly SaaS offerings or lack first-class support for local LLM tool-calling and custom developer nodes."
+constraints:
+  - "Must support real-time visual canvas node editing and connection validation"
+  - "Asynchronous execution of complex Directed Acyclic Graph (DAG) workflows"
+  - "Secure encrypted storage for API credentials and OAuth tokens"
+approach: "Built a React-based node editor backed by a decoupled Node.js/TypeScript execution engine. Developed custom node plugins for Telegram (Send/Wait), Gmail (Send/OAuth), Webhooks, and an AI Agent node."
+keyDecisions:
+  - decision: "Decouple visual canvas state from backend DAG execution graph"
+    reasoning: "Ensures headless execution of scheduled or webhook-triggered workflows without requiring an active browser window."
+    alternatives:
+      - "Tightly coupled client-server evaluation"
+  - decision: "Integrate LLM tool-calling directly inside workflow nodes"
+    reasoning: "Allows AI Agent nodes to dynamically choose and execute other workflow nodes as tool functions."
+    alternatives:
+      - "Separate microservice for AI agents"
+techStack:
+  - "TypeScript"
+  - "React"
+  - "Node.js"
+  - "TypeORM"
+  - "Prisma"
+  - "PostgreSQL"
+  - "SQLite"
+  - "OpenAI API"
+  - "Anthropic API"
+  - "Telegram API"
+  - "Docker"
+impact:
+  metrics:
+    - label: "Core Integrations"
+      value: "Telegram, Gmail, Webhooks, AI"
+    - label: "Step Execution"
+      value: "< 100ms per node"
+    - label: "Architecture"
+      value: "Decoupled DAG Engine"
+  qualitative: "Engineered a scalable workflow execution platform showcasing deep full-stack mastery in stateful graph traversal, async loops, and LLM tool calling."
+learnings:
+  - "Topological sorting algorithms are essential for cleanly resolving complex node dependencies."
+  - "Handling async event loop state is critical to preventing node execution deadlocks."
+featured: true
+order: 2
+---
+
+## Visual Automation & AI Tool Calling
+
+The goal of **n8n Clone** was to build a developer-first automation engine capable of combining traditional API integrations (Telegram, Gmail, SMTP) with state-of-the-art AI Agent reasoning.
+
+### Architecture Highlights
+
+- **Visual Editor**: Interactive node-graph canvas built with React, featuring live connection validation and dynamic node config panels.
+- **DAG Execution Engine**: Evaluates node workflows using a topological sort. Supports conditional branching, wait-nodes, and retry loops.
+- **AI Agent Node**: Equips LLMs (OpenAI, Anthropic, or Ollama local models) with access to workflow inputs and downstream actions as callable tools.
