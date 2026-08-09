@@ -62,3 +62,5 @@ coverage/
 .settings/
 *.sublime-project
 *.sublime-workspace
+.vercel
+.env*

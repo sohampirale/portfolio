@@ -23,7 +23,7 @@ import { defineConfig, envField } from 'astro/config';
 import { loadEnv } from 'vite';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
-import node from '@astrojs/node';
+import vercel from '@astrojs/vercel';
 
 /**
  * Load environment variables from .env file
@@ -46,11 +46,11 @@ export default defineConfig({
    *
    * All pages are statically pre-rendered (SSG) by default.
    * The /api/chat route opts out via `export const prerender = false`
-   * and is served by the Node standalone server.
+   * and is served as a Vercel serverless function.
    */
   output: 'static',
   
-  adapter: node({ mode: 'standalone' }),
+  adapter: vercel(),
   
   /**
    * Astro integrations

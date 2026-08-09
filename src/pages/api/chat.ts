@@ -23,9 +23,9 @@ import path from 'node:path';
 
 // ─── Model config ───────────────────────────────────────────────────────────
 // Fireworks AI OpenAI-compatible endpoint
-// Model: DeepSeek V3 (update model string if Fireworks releases a newer version)
+// Model: DeepSeek V4 Flash on Fireworks AI
 const FIREWORKS_BASE_URL = 'https://api.fireworks.ai/inference/v1';
-const MODEL = 'accounts/fireworks/models/deepseek-v3-0324';
+const MODEL = 'accounts/fireworks/models/deepseek-v4-flash';
 
 // Max conversation turns to keep in context (avoid token bloat)
 const MAX_HISTORY_TURNS = 6;
