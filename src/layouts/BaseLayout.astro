@@ -42,6 +42,7 @@
 import { ClientRouter } from 'astro:transitions';
 import Navigation from '../components/Navigation.astro';
 import Footer from '../components/Footer.astro';
+import ChatWidget from '../components/ChatWidget.astro';
 import { siteConfig } from '../config';
 import '../styles/global.css';
 import '../styles/typography.css';
@@ -111,5 +112,6 @@ import '../styles/utilities.css';
       <slot />
     </main>
     <Footer />
+    <ChatWidget />
   </body>
 </html>

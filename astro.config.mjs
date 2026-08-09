@@ -23,6 +23,7 @@ import { defineConfig, envField } from 'astro/config';
 import { loadEnv } from 'vite';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import node from '@astrojs/node';
 
 /**
  * Load environment variables from .env file
@@ -41,12 +42,15 @@ const { SITE_URL } = loadEnv(process.env.NODE_ENV || 'production', process.cwd()
  */
 export default defineConfig({
   /**
-   * Output mode: Static Site Generation (SSG)
-   * 
-   * Generates static HTML files at build time for optimal performance
-   * and hosting flexibility. All pages are pre-rendered.
+   * Output mode: Static (Astro 5)
+   *
+   * All pages are statically pre-rendered (SSG) by default.
+   * The /api/chat route opts out via `export const prerender = false`
+   * and is served by the Node standalone server.
    */
   output: 'static',
+  
+  adapter: node({ mode: 'standalone' }),
   
   /**
    * Astro integrations
@@ -58,6 +62,16 @@ export default defineConfig({
     mdx(),
     sitemap(),
   ],
+  
+  /**
+   * Vite config: expose server-only env vars to Astro API routes
+   */
+  vite: {
+    define: {
+      'import.meta.env.FIREWORKS_API_KEY': JSON.stringify(process.env.FIREWORKS_API_KEY || ''),
+      'import.meta.env.EXA_API_KEY': JSON.stringify(process.env.EXA_API_KEY || ''),
+    }
+  },
   
   /**
    * Site URL
@@ -105,6 +119,10 @@ export default defineConfig({
       SOCIAL_TWITTER: envField.string({ context: 'client', access: 'public', default: '' }),
       SOCIAL_MASTODON: envField.string({ context: 'client', access: 'public', default: '' }),
       SOCIAL_BLUESKY: envField.string({ context: 'client', access: 'public', default: '' }),
+      
+      // Secret server-side keys (never exposed to client)
+      FIREWORKS_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
+      EXA_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
   
@@ -123,13 +141,6 @@ export default defineConfig({
    * very large images (~16K x 16K pixels maximum).
    */
   image: {
-    service: {
-      entrypoint: 'astro/assets/services/sharp',
-      config: {
-        // Limit concurrent image processing to avoid memory issues
-        limitInputPixels: 268402689, // ~16K x 16K pixels
-      }
-    },
     // Remote image patterns (currently empty - add patterns as needed)
     remotePatterns: [],
   },
