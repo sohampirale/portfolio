@@ -1,0 +1,55 @@
+---
+title: "Alumni AI Copilot & LinkedIn Intelligence Agent"
+role: "AI Product Engineer"
+year: 2026
+duration: "2 months"
+teamSize: 1
+outcomeSummary: "Designed an AI research copilot using Exa AI and structured data enrichment to query alumni career trajectories for college Placement Officers (TPOs)."
+overview: "An AI intelligence platform built for Training & Placement Officers (TPOs). It indexes and enriches alumni databases using Exa AI web research agents, replacing manual LinkedIn searching with natural language queries like 'Find alumni with 5+ years experience at Microsoft'."
+problem: "TPOs have unstructured networks of thousands of alumni, but manually finding relevant contacts for student placements or company relationships requires tedious multi-hour LinkedIn searches."
+constraints:
+  - "Handle incomplete public LinkedIn profiles without breaking search precision"
+  - "Corroborate research facts across GitHub, web evidence, and career snapshots"
+  - "Prevent hallucinated career changes by implementing evidence verification"
+approach: "Integrated Exa AI web research tools into an autonomous agent pipeline. Designed a multi-step research loop: Profile Target $\rightarrow$ Exa Web Investigation $\rightarrow$ Structured Fact Extraction $\rightarrow$ Database Snapshot Comparison."
+keyDecisions:
+  - decision: "Implement Shadow Mode / Research-Only Verification before automated actions"
+    reasoning: "Prevents automated agent hallucinations from publishing unverified career updates or outreach messages."
+    alternatives:
+      - "Full autonomous execution with direct buffer publishing"
+  - decision: "Use Exa AI for structured web research over standard SERP APIs"
+    reasoning: "Exa provides neural semantic search and content extraction tuned for people and company intelligence."
+techStack:
+  - "TypeScript"
+  - "Python"
+  - "Exa AI"
+  - "LangGraph"
+  - "Next.js"
+  - "PostgreSQL"
+  - "Prisma"
+  - "OpenAI API"
+impact:
+  metrics:
+    - label: "Query Speed"
+      value: "Instant Natural Language"
+    - label: "Research Engine"
+      value: "Exa Neural Search"
+    - label: "Agent Pattern"
+      value: "Research $\rightarrow$ Corroborate"
+  qualitative: "Converted manual spreadsheet-based alumni tracking into an AI-powered natural language intelligence database."
+learnings:
+  - "Validating simple useful loops first is vital — over-engineering complex agent memory before proving core retrieval leads to brittle systems."
+  - "An AI agent stating a fact doesn't make it true — evidence corroboration is mandatory."
+featured: true
+order: 4
+---
+
+## AI + Web Research Architecture
+
+Instead of simple keyword search, **Alumni AI Copilot** uses Exa AI to perform structured web research across public web sources, LinkedIn profiles, and GitHub activity.
+
+### Intelligence Pipeline
+
+1. **Natural Language Query**: TPOs ask complex questions (*"Which alumni can help establish a hiring relationship with SAP?"*).
+2. **Exa Research Agent**: Performs neural web searches, fetching career history, company changes, and public activity.
+3. **Fact Corroboration**: Compares raw web research against historical database snapshots to confirm recent job transitions.

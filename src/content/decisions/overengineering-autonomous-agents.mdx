@@ -1,0 +1,19 @@
+---
+title: "Avoiding Over-Engineering in Autonomous AI Systems: Shadow Mode & Core Loop Validation"
+date: 2026-06-15
+context: "While developing autonomous research agents (Exa AI + LinkedIn research), we built elaborate multi-stage agent pipelines (memory, historical snapshot diffing, automated Buffer posting) before fully validating the basic retrieval loop."
+decision: "Adopt a strict 'Shadow Mode' / 'Research-Only' pattern for autonomous AI agents. Validate core input-output loops manually before adding complex agent memory or automated external actions."
+alternatives:
+  - option: "Full End-to-End Autonomous Execution with Direct Publishing"
+    pros: ["Zero human interaction"]
+    cons: ["High risk of agent hallucinations posting unverified data", "Difficult to debug multi-node failures"]
+reasoning: "Running AI agents in shadow mode allows developers to observe agent reasoning, measure retrieval precision, and refine prompts before granting write access to external APIs."
+tags: ["AI", "Agents", "Architecture", "Engineering Methodology"]
+relatedProjects:
+  - "alumni-ai-copilot"
+  - "agentic-pr-reviewer"
+---
+
+## Key Takeaway
+
+Building autonomous AI systems requires disciplined engineering restraint. Over-engineering agent memory or complex state graphs before validating the simplest useful execution path leads to brittle systems. Always establish a robust shadow mode first.

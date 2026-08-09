@@ -1,0 +1,46 @@
+---
+title: "AquaTrack — Water Purifier Service Management SaaS"
+role: "Product Developer & Architect"
+year: 2026
+duration: "1.5 months"
+teamSize: 1
+outcomeSummary: "Architected a vertical SaaS system for water purifier service businesses with Next.js, Drizzle, PostgreSQL, and automated WhatsApp service reminders."
+overview: "AquaTrack is a service management platform designed to automate operational workflows for water purifier service companies. Features customer management, service history, warranty tracking, PDF receipts, and automated WhatsApp maintenance alerts."
+problem: "Water purifier service companies lose customer retention due to missed periodic filter replacements, untracked warranties, and manual paper billing."
+constraints:
+  - "Automated scheduled notifications without human intervention"
+  - "Type-safe database ORM and fast serverless deployment"
+  - "QR-based WhatsApp pairing for business phone numbers"
+approach: "Architected a full-stack Next.js App Router application powered by Express APIs, BetterAuth authentication, Drizzle ORM, PostgreSQL, and Evolution API for cron-driven WhatsApp notifications."
+keyDecisions:
+  - decision: "Use Drizzle ORM + PostgreSQL over Prisma"
+    reasoning: "Drizzle provides lightweight, SQL-like type safety with lower cold-start latency for serverless API routes."
+  - decision: "Implement Cron-based WhatsApp Dispatcher"
+    reasoning: "Automatically queries upcoming filter replacement dates daily and dispatches personalized WhatsApp reminders to customers."
+techStack:
+  - "TypeScript"
+  - "Next.js"
+  - "Express"
+  - "BetterAuth"
+  - "Drizzle ORM"
+  - "PostgreSQL"
+  - "Evolution API"
+  - "WhatsApp API"
+impact:
+  metrics:
+    - label: "Architecture"
+      value: "Next.js + Drizzle + Postgres"
+    - label: "Automation"
+      value: "Cron WhatsApp Reminders"
+    - label: "Focus Area"
+      value: "Vertical Service SaaS"
+  qualitative: "Designed an end-to-end operational software product solving customer retention and maintenance scheduling for local service businesses."
+learnings:
+  - "Traditional service businesses operate on recurring workflows — automating periodic reminders drives massive retention value."
+featured: false
+order: 6
+---
+
+## Workflow Automation Architecture
+
+AquaTrack addresses the core business challenge of water purification services: **preventing lost recurring revenue from missed filter maintenance cycles**.
