@@ -3,7 +3,7 @@
  * ChatWidget
  *
  * Floating AI chatbot for the portfolio.
- * Designed to strictly match the Case portfolio minimal dark design system.
+ * Matches the Case portfolio minimal dark design system.
  *
  * Calls /api/chat server-side (Fireworks DeepSeek V4 Flash + Exa agent).
  *
@@ -37,8 +37,8 @@
         <p class="chat-status">Ask anything about Soham</p>
       </div>
     </div>
-    <button id="chat-close-btn" aria-label="Close chat">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="16" height="16">
+    <button id="chat-close-btn" aria-label="Close chat" type="button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="18" height="18">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
       </svg>
@@ -55,10 +55,10 @@
 
   <!-- Suggested Starters -->
   <div id="chat-starters">
-    <button class="starter-chip" data-msg="What products has Soham built?">Products built</button>
-    <button class="starter-chip" data-msg="Tell me about RopMitra">RopMitra SaaS</button>
-    <button class="starter-chip" data-msg="What is Soham's tech stack?">Tech stack</button>
-    <button class="starter-chip" data-msg="What are his AI agent projects?">AI agent work</button>
+    <button class="starter-chip" data-msg="What products has Soham built?" type="button">Products built</button>
+    <button class="starter-chip" data-msg="Tell me about RopMitra" type="button">RopMitra SaaS</button>
+    <button class="starter-chip" data-msg="What is Soham's tech stack?" type="button">Tech stack</button>
+    <button class="starter-chip" data-msg="What are his AI agent projects?" type="button">AI agent work</button>
   </div>
 
   <!-- Input Form -->
@@ -108,6 +108,7 @@
   #chat-toggle-btn svg {
     width: 1.25rem;
     height: 1.25rem;
+    pointer-events: none;
   }
 
   /* ─── Chat Panel (Minimal Dark Aesthetic) ────────────────────────────── */
@@ -184,18 +185,29 @@
   }
 
   #chat-close-btn {
-    background: none;
+    background: transparent;
     border: none;
     cursor: pointer;
     color: var(--color-text-muted, #737373);
-    padding: 0.25rem;
-    border-radius: 4px;
-    display: flex;
-    transition: color 0.15s;
+    padding: 0.5rem;
+    margin: -0.25rem;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, background 0.15s;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
   }
 
   #chat-close-btn:hover {
     color: var(--color-text, #e5e5e5);
+    background: var(--color-bg-elevated, #1a1a1a);
+  }
+
+  #chat-close-btn svg {
+    pointer-events: none;
   }
 
   /* ─── Messages Area ──────────────────────────────────────────────────── */
@@ -409,156 +421,202 @@
 </style>
 
 <script>
-  // ─── Elements ─────────────────────────────────────────────────────────────
-  const toggleBtn    = document.getElementById('chat-toggle-btn')!;
-  const closeBtn     = document.getElementById('chat-close-btn')!;
-  const panel        = document.getElementById('chat-panel')!;
-  const form         = document.getElementById('chat-form') as HTMLFormElement;
-  const input        = document.getElementById('chat-input') as HTMLInputElement;
-  const messagesDiv  = document.getElementById('chat-messages')!;
-  const startersDiv  = document.getElementById('chat-starters')!;
-  const openIcon     = document.getElementById('chat-icon-open')!;
-  const closeIcon    = document.getElementById('chat-icon-close')!;
-  const sendBtn      = document.getElementById('chat-send-btn') as HTMLButtonElement;
-
-  // Conversation history sent to API
+  // Conversation state
   let conversationHistory: { role: string; content: string }[] = [];
   let isOpen = true; // Open by default
   let isLoading = false;
 
-  // ─── Toggle panel ──────────────────────────────────────────────────────────
-  function openChat() {
-    panel.style.display = 'flex';
-    openIcon.style.display = 'none';
-    closeIcon.style.display = 'block';
-    isOpen = true;
-  }
+  function initChat() {
+    const toggleBtn    = document.getElementById('chat-toggle-btn');
+    const closeBtn     = document.getElementById('chat-close-btn');
+    const panel        = document.getElementById('chat-panel');
+    const form         = document.getElementById('chat-form') as HTMLFormElement | null;
+    const input        = document.getElementById('chat-input') as HTMLInputElement | null;
+    const messagesDiv  = document.getElementById('chat-messages');
+    const startersDiv  = document.getElementById('chat-starters');
+    const openIcon     = document.getElementById('chat-icon-open');
+    const closeIcon    = document.getElementById('chat-icon-close');
+    const sendBtn      = document.getElementById('chat-send-btn') as HTMLButtonElement | null;
 
-  function closeChat() {
-    panel.style.display = 'none';
-    openIcon.style.display = 'block';
-    closeIcon.style.display = 'none';
-    isOpen = false;
-  }
+    if (!panel || !toggleBtn || !closeBtn) return;
 
-  toggleBtn.addEventListener('click', () => (isOpen ? closeChat() : openChat()));
-  closeBtn.addEventListener('click', closeChat);
-
-  // ─── Add message bubble with explicit sender label ────────────────────────
-  function addMessage(role: 'user' | 'assistant', content: string, usedExa = false) {
-    const div = document.createElement('div');
-    div.className = `chat-msg ${role}`;
-
-    const senderLabel = role === 'user' ? 'You' : "Soham's AI";
-
-    // Format markdown
-    const formatted = content
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.08);padding:0.1em 0.3em;border-radius:3px;font-size:0.85em">$1</code>')
-      .split('\n\n')
-      .map((para: string) => `<p>${para.replace(/\n/g, '<br>')}</p>`)
-      .join('');
-
-    div.innerHTML = `<div class="msg-sender-label">${senderLabel}</div>${formatted}`;
-
-    if (usedExa && role === 'assistant') {
-      const badge = document.createElement('span');
-      badge.className = 'exa-badge';
-      badge.textContent = '⚡ Web Search Used';
-      div.appendChild(badge);
+    function openChat(e?: Event) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (panel && openIcon && closeIcon) {
+        panel.style.display = 'flex';
+        openIcon.style.display = 'none';
+        closeIcon.style.display = 'block';
+        isOpen = true;
+      }
     }
 
-    messagesDiv.appendChild(div);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  }
+    function closeChat(e?: Event) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (panel && openIcon && closeIcon) {
+        panel.style.display = 'none';
+        openIcon.style.display = 'block';
+        closeIcon.style.display = 'none';
+        isOpen = false;
+      }
+    }
 
-  // ─── Show / hide typing indicator ─────────────────────────────────────────
-  function showTyping(): HTMLElement {
-    const div = document.createElement('div');
-    div.className = 'chat-msg assistant typing';
-    div.id = 'typing-indicator';
-    div.innerHTML = `
-      <div class="msg-sender-label">Soham's AI</div>
-      <div style="display:flex;gap:0.3rem;align-items:center">
-        <span class="typing-dot"></span>
-        <span class="typing-dot"></span>
-        <span class="typing-dot"></span>
-      </div>
-    `;
-    messagesDiv.appendChild(div);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    return div;
-  }
+    // Toggle button click & touch handlers
+    toggleBtn.onclick = (e) => {
+      if (isOpen) {
+        closeChat(e);
+      } else {
+        openChat(e);
+      }
+    };
 
-  function removeTyping() {
-    document.getElementById('typing-indicator')?.remove();
-  }
+    // Close button explicit handlers
+    closeBtn.onclick = (e) => closeChat(e);
 
-  // ─── Send message ──────────────────────────────────────────────────────────
-  async function sendMessage(text: string) {
-    if (!text.trim() || isLoading) return;
+    // Add message bubble
+    function addMessage(role: 'user' | 'assistant', content: string, usedExa = false) {
+      if (!messagesDiv) return;
+      const div = document.createElement('div');
+      div.className = `chat-msg ${role}`;
 
-    // Hide starters after first interaction
-    startersDiv.style.display = 'none';
+      const senderLabel = role === 'user' ? 'You' : "Soham's AI";
 
-    // Show user message bubble
-    addMessage('user', text);
-    conversationHistory.push({ role: 'user', content: text });
+      const formatted = content
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.08);padding:0.1em 0.3em;border-radius:3px;font-size:0.85em">$1</code>')
+        .split('\n\n')
+        .map((para: string) => `<p>${para.replace(/\n/g, '<br>')}</p>`)
+        .join('');
 
-    // Lock UI
-    isLoading = true;
-    sendBtn.disabled = true;
-    input.value = '';
-    input.disabled = true;
+      div.innerHTML = `<div class="msg-sender-label">${senderLabel}</div>${formatted}`;
 
-    // Show typing
-    showTyping();
-
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, history: conversationHistory.slice(-12) }),
-      });
-
-      removeTyping();
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: 'Unknown error' }));
-        addMessage('assistant', err.error || 'Something went wrong. Please try again.');
-        return;
+      if (usedExa && role === 'assistant') {
+        const badge = document.createElement('span');
+        badge.className = 'exa-badge';
+        badge.textContent = '⚡ Web Search Used';
+        div.appendChild(badge);
       }
 
-      const data = await res.json();
-      const reply: string = data.reply || 'Sorry, I couldn\'t generate a response.';
-      const usedExa: boolean = data.usedExa || false;
-
-      addMessage('assistant', reply, usedExa);
-      conversationHistory.push({ role: 'assistant', content: reply });
-
-    } catch {
-      removeTyping();
-      addMessage('assistant', 'Network error. Please check your connection and try again.');
-    } finally {
-      isLoading = false;
-      sendBtn.disabled = false;
-      input.disabled = false;
-      input.focus();
+      messagesDiv.appendChild(div);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
+
+    function showTyping(): HTMLElement | null {
+      if (!messagesDiv) return null;
+      const div = document.createElement('div');
+      div.className = 'chat-msg assistant typing';
+      div.id = 'typing-indicator';
+      div.innerHTML = `
+        <div class="msg-sender-label">Soham's AI</div>
+        <div style="display:flex;gap:0.3rem;align-items:center">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+        </div>
+      `;
+      messagesDiv.appendChild(div);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      return div;
+    }
+
+    function removeTyping() {
+      document.getElementById('typing-indicator')?.remove();
+    }
+
+    async function sendMessage(text: string) {
+      if (!text.trim() || isLoading) return;
+
+      if (startersDiv) startersDiv.style.display = 'none';
+
+      addMessage('user', text);
+      conversationHistory.push({ role: 'user', content: text });
+
+      isLoading = true;
+      if (sendBtn) sendBtn.disabled = true;
+      if (input) {
+        input.value = '';
+        input.disabled = true;
+      }
+
+      showTyping();
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, history: conversationHistory.slice(-12) }),
+        });
+
+        removeTyping();
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: 'Unknown error' }));
+          addMessage('assistant', err.error || 'Something went wrong. Please try again.');
+          return;
+        }
+
+        const data = await res.json();
+        const reply: string = data.reply || 'Sorry, I couldn\'t generate a response.';
+        const usedExa: boolean = data.usedExa || false;
+
+        addMessage('assistant', reply, usedExa);
+        conversationHistory.push({ role: 'assistant', content: reply });
+
+      } catch {
+        removeTyping();
+        addMessage('assistant', 'Network error. Please check your connection and try again.');
+      } finally {
+        isLoading = false;
+        if (sendBtn) sendBtn.disabled = false;
+        if (input) {
+          input.disabled = false;
+          input.focus();
+        }
+      }
+    }
+
+    if (form) {
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        if (input) sendMessage(input.value.trim());
+      };
+    }
+
+    document.querySelectorAll('.starter-chip').forEach((chip) => {
+      (chip as HTMLElement).onclick = () => {
+        const msg = (chip as HTMLElement).dataset.msg || '';
+        sendMessage(msg);
+      };
+    });
   }
 
-  // ─── Form submit ───────────────────────────────────────────────────────────
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    sendMessage(input.value.trim());
-  });
+  // Bind on both initial load and View Transitions (ClientRouter)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initChat);
+  } else {
+    initChat();
+  }
 
-  // ─── Starter chips ─────────────────────────────────────────────────────────
-  document.querySelectorAll('.starter-chip').forEach((chip) => {
-    chip.addEventListener('click', () => {
-      const msg = (chip as HTMLElement).dataset.msg || '';
-      sendMessage(msg);
-    });
+  document.addEventListener('astro:page-load', initChat);
+
+  // Global delegated click listener for close button fallback
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement | null;
+    if (target && target.closest && target.closest('#chat-close-btn')) {
+      const panel = document.getElementById('chat-panel');
+      const openIcon = document.getElementById('chat-icon-open');
+      const closeIcon = document.getElementById('chat-icon-close');
+      if (panel && openIcon && closeIcon) {
+        panel.style.display = 'none';
+        openIcon.style.display = 'block';
+        closeIcon.style.display = 'none';
+      }
+    }
   });
 </script>
