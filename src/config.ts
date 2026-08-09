@@ -127,8 +127,8 @@ export const siteConfig = {
   nav: [
     { label: 'Projects', href: '/projects' },
     { label: 'Decisions', href: '/decisions' },
+    { label: 'Skills', href: '/skills' },
     { label: 'Journey', href: '/journey' },
-    { label: 'Writing', href: '/writing' },
     { label: 'Speaking', href: '/speaking' },
     { label: 'Uses', href: '/uses' },
     { label: 'Contact', href: '/contact' },

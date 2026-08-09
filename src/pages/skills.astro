@@ -1,0 +1,350 @@
+---
+/**
+ * Skills Page — Soham Pirale
+ *
+ * In-depth technical skills inventory, framework proficiency,
+ * database mastery, AI engineering stack, and architectural capabilities.
+ *
+ * Route: /skills
+ * @page
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SEO from '../components/SEO.astro';
+
+const pageTitle = "Technical Skills & Engineering Stack | Soham Pirale";
+const pageDescription = "Comprehensive inventory of Soham Pirale's engineering skills across AI systems, backend architecture, databases, vertical SaaS automation, frontend frameworks, and cloud infrastructure.";
+
+// Categorized skill inventory
+const skillCategories = [
+  {
+    id: "ai-engineering",
+    title: "AI Engineering & Autonomous Agents",
+    icon: "🤖",
+    description: "Building production-grade cyclic state agents, neural search platforms, RAG pipelines, and voice interfaces.",
+    skills: [
+      { name: "LangGraph", level: "Expert", desc: "Cyclic state graphs, validation loops, persistent memory, and agentic workflows" },
+      { name: "DeepSeek & Fireworks AI", level: "Expert", desc: "DeepSeek V4 Flash / V3 inference, low-latency API integration, system prompting" },
+      { name: "Exa AI Neural Search", level: "Expert", desc: "Agentic web research tool calling, alumni indexing, and real-time internet retrieval" },
+      { name: "LangChain", level: "Advanced", desc: "Chain construction, prompt templates, output parsers, and tool abstraction" },
+      { name: "RAG & Embeddings", level: "Advanced", desc: "Vector indexing, Cohere & Google embeddings, semantic retrieval, hybrid search" },
+      { name: "Tool Calling & Function Execution", level: "Expert", desc: "Schema validation, structured outputs, multi-tool orchestration" },
+      { name: "Voice AI & Pipecat", level: "Intermediate", desc: "Pipecat framework, voice cloning (MeetMyClone), meeting bot automation" },
+      { name: "OpenAI, Claude & Gemini", level: "Expert", desc: "Multi-provider LLM orchestration, fallback strategies, token optimization" },
+    ]
+  },
+  {
+    id: "backend-systems",
+    title: "Backend & Distributed Systems",
+    icon: "⚙️",
+    description: "Designing low-latency APIs, event-driven webhooks, custom workflow execution engines, and background workers.",
+    skills: [
+      { name: "Node.js & Express", level: "Expert", desc: "REST APIs, custom middleware, stream processing, asynchronous pipelines" },
+      { name: "TypeScript", level: "Expert", desc: "Strict type safety, generic utilities, backend & frontend unified typing" },
+      { name: "Socket.io & WebSockets", level: "Expert", desc: "Real-time terminal streaming (DockHostV2), multi-worker node heartbeat & reconnection" },
+      { name: "Python", level: "Advanced", desc: "LangGraph agents, script automation, data processing, voice frameworks" },
+      { name: "Hono & Edge Runtimes", level: "Advanced", desc: "Ultra-fast serverless API routes on Cloudflare Workers and Node" },
+      { name: "Authentication Systems", level: "Advanced", desc: "BetterAuth, NextAuth, JWT session security, OAuth2 providers" },
+      { name: "Background Queue Architecture", level: "Expert", desc: "SQLite WAL-mode queues for low-RAM VMs, Redis job queues, cron workers" },
+    ]
+  },
+  {
+    id: "databases-storage",
+    title: "Databases & Storage Infrastructure",
+    icon: "🗄️",
+    description: "Relational, document, vector, and embedded databases optimized for constrained resources and production workloads.",
+    skills: [
+      { name: "PostgreSQL & Neon", level: "Advanced", desc: "Relational modeling, indexing, Prisma & Drizzle ORM, serverless Postgres" },
+      { name: "SQLite (better-sqlite3)", level: "Expert", desc: "Embedded WAL mode queues, zero-daemon persistence, ultra-low RAM footprint (<80MB)" },
+      { name: "MongoDB & Mongoose", level: "Advanced", desc: "Document schemas, aggregation pipelines, replica set management" },
+      { name: "Supabase", level: "Advanced", desc: "Postgres database, real-time subscriptions, storage buckets, Auth" },
+      { name: "Qdrant Vector DB", level: "Advanced", desc: "Vector similarity search, collection payload filtering, semantic retrieval" },
+      { name: "Cloudflare D1 & KV", level: "Advanced", desc: "Edge SQL database and global key-value cache" },
+      { name: "Prisma & Drizzle ORM", level: "Expert", desc: "Type-safe database migrations, schema generation, complex joins" },
+    ]
+  },
+  {
+    id: "automation-saas",
+    title: "Automation & Vertical SaaS Systems",
+    icon: "⚡",
+    description: "Building zero-to-one SaaS applications for nurseries, water purifier service companies, and custom workflow engines.",
+    skills: [
+      { name: "n8n Custom Workflow Engine", level: "Expert", desc: "Built full visual drag-and-drop n8n clone from scratch with custom nodes" },
+      { name: "WhatsApp Automation", level: "Expert", desc: "Evolution API, Baileys, WAHA, campaign queueing, Marathi PDF invoice delivery" },
+      { name: "Telegram Bot Platform", level: "Advanced", desc: "Custom bot triggers, webhooks, broadcast automation" },
+      { name: "Twilio API", level: "Advanced", desc: "SMS/WhatsApp subaccounts, multi-tenant per-customer number billing" },
+      { name: "Playwright Web Scraping", level: "Advanced", desc: "Headless browser automation, Playwright-MCP agent integration" },
+      { name: "Buffer API Integration", level: "Advanced", desc: "Autonomous social content scheduling & shadow-mode approval pipeline" },
+    ]
+  },
+  {
+    id: "frontend-ui",
+    title: "Frontend & UI Engineering",
+    icon: "🎨",
+    description: "Creating responsive, fast, high-performance web applications with clean design systems and modern frameworks.",
+    skills: [
+      { name: "React 18 & Next.js", level: "Expert", desc: "App Router, Server Components, SSR/SSG, state management, custom hooks" },
+      { name: "Astro 5", level: "Expert", desc: "Content Collections, hybrid SSR/SSG mode, zero-JS default output" },
+      { name: "Vite & Vanilla JS", level: "Expert", desc: "Custom component development, ES modules, lightweight UI widgets" },
+      { name: "Tailwind CSS & shadcn/ui", level: "Expert", desc: "Design systems, dark modes, glassmorphism, responsive utility layouts" },
+      { name: "HTML5 & Modern CSS", level: "Expert", desc: "Semantic markup, CSS Grid/Flexbox, micro-animations, accessibility" },
+    ]
+  },
+  {
+    id: "devops-infrastructure",
+    title: "DevOps & Infrastructure",
+    icon: "☁️",
+    description: "Containerization, cloud VM management, reverse proxies, and continuous integration pipelines.",
+    skills: [
+      { name: "Docker & Docker Compose", level: "Expert", desc: "Multi-stage builds, container isolation, persistent volumes, DockHost orchestration" },
+      { name: "Linux (Ubuntu Server)", level: "Expert", desc: "Bash scripting, systemd service management, process monitoring (PM2), SSH security" },
+      { name: "Oracle Cloud Infrastructure (OCI)", level: "Advanced", desc: "Always Free ARM VMs, Virtual Cloud Networks (VCN), subnets, NAT gateways" },
+      { name: "Nginx", level: "Advanced", desc: "Reverse proxying, SSL/TLS setup (Certbot), load balancing, WebSocket proxying" },
+      { name: "Vercel & Cloudflare", level: "Expert", desc: "Serverless deployments, domain aliasing, edge functions, DNS configuration" },
+      { name: "GitHub Actions & CI/CD", level: "Advanced", desc: "Automated test runs, build validation, deployment pipelines" },
+    ]
+  },
+  {
+    id: "languages-foundations",
+    title: "Core Languages & Fundamentals",
+    icon: "💻",
+    description: "Strong foundational programming languages, data structures, and computer science principles.",
+    skills: [
+      { name: "TypeScript / JavaScript", level: "Primary", desc: "Daily primary language across frontend, backend, serverless, and AI systems" },
+      { name: "Python", level: "Secondary", desc: "AI agent engineering, automation scripts, voice pipelines" },
+      { name: "SQL", level: "Advanced", desc: "Complex queries, indexing strategies, join optimization, schema design" },
+      { name: "C & C++", level: "Foundational", desc: "Data structures, memory management algorithms, systems programming" },
+      { name: "Java", level: "Foundational", desc: "Object-oriented programming concepts, core data structures" },
+      { name: "Bash & Shell Scripting", level: "Advanced", desc: "System administration scripts, server deployment automation" },
+    ]
+  }
+];
+---
+
+<BaseLayout>
+  <SEO
+    title={pageTitle}
+    description={pageDescription}
+  />
+
+  <div class="skills-page">
+    <header class="page-header">
+      <h1 class="page-title">Technical Skills & Engineering Stack</h1>
+      <p class="page-description">
+        A detailed breakdown of every technology, framework, database, AI system, and infrastructure tool I build with.
+      </p>
+    </header>
+
+    <!-- Quick Category Nav -->
+    <div class="category-pills">
+      {skillCategories.map((cat) => (
+        <a href={`#${cat.id}`} class="pill-item">
+          <span>{cat.icon}</span> {cat.title.split(' ')[0]}
+        </a>
+      ))}
+    </div>
+
+    <!-- Skills Grid by Category -->
+    <div class="skills-categories">
+      {skillCategories.map((category) => (
+        <section id={category.id} class="skill-category-section">
+          <div class="category-header">
+            <span class="category-icon">{category.icon}</span>
+            <div>
+              <h2 class="category-title">{category.title}</h2>
+              <p class="category-desc">{category.description}</p>
+            </div>
+          </div>
+
+          <div class="skills-grid">
+            {category.skills.map((skill) => (
+              <div class="skill-card">
+                <div class="skill-card-top">
+                  <h3 class="skill-name">{skill.name}</h3>
+                  <span class={`skill-level-badge level-${skill.level.toLowerCase().replace(/[^a-z]/g, '')}`}>
+                    {skill.level}
+                  </span>
+                </div>
+                <p class="skill-desc">{skill.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .skills-page {
+    max-width: 68rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 5rem;
+  }
+
+  .page-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--color-text, #f8fafc);
+    letter-spacing: -0.03em;
+    margin-bottom: 0.75rem;
+  }
+
+  .page-description {
+    font-size: 1.125rem;
+    color: var(--color-text-muted, #94a3b8);
+    max-width: 44rem;
+    line-height: 1.6;
+  }
+
+  /* Category Quick Pills */
+  .category-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 3.5rem;
+    padding: 0.75rem;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--color-border, #1e293b);
+    border-radius: 12px;
+  }
+
+  .pill-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-text-secondary, #cbd5e1);
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .pill-item:hover {
+    background: rgba(59, 130, 246, 0.15);
+    color: #38bdf8;
+  }
+
+  /* Skill Category Section */
+  .skill-category-section {
+    margin-bottom: 4rem;
+    scroll-margin-top: 5rem;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border, #1e293b);
+  }
+
+  .category-icon {
+    font-size: 2rem;
+    line-height: 1;
+    padding: 0.5rem;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 12px;
+  }
+
+  .category-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text, #f1f5f9);
+    margin: 0 0 0.25rem;
+  }
+
+  .category-desc {
+    font-size: 0.95rem;
+    color: var(--color-text-muted, #94a3b8);
+    margin: 0;
+  }
+
+  /* Skills Grid */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .skill-card {
+    background: var(--color-bg-secondary, #0f172a);
+    border: 1px solid var(--color-border, #1e293b);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .skill-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 12px rgba(59, 130, 246, 0.1);
+  }
+
+  .skill-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .skill-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin: 0;
+  }
+
+  .skill-level-badge {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .level-expert, .level-primary {
+    background: rgba(37, 99, 235, 0.2);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+  }
+
+  .level-advanced, .level-secondary {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  .level-intermediate, .level-foundational {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+
+  .skill-desc {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .page-title {
+      font-size: 1.85rem;
+    }
+    .skills-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
